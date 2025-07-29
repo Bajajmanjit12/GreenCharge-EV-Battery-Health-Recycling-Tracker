@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manufacturer Dashboard</title>
+   <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7f9;
+    }
+
+    header {
+      background: #1976d2;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      background: #1565c0;
+      flex-wrap: wrap;
+    }
+
+    .nav-tabs a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      display: block;
+      transition: background 0.3s;
+    }
+
+    .nav-tabs a:hover {
+      background: #0d47a1;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card a {
+      text-decoration: none;
+      color: #1976d2;
+      font-size: 18px;
+    }
+
+    .logout {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .logout a {
+      color: #fff;
+      background: #d32f2f;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .logout a:hover {
+      background: #b71c1c;
+    }
+
+    footer {
+      margin-top: 50px;
+      background: #eeeeee;
+      padding: 20px;
+      text-align: center;
+      color: #555;
+      font-size: 15px;
+    }
+
+    footer a {
+      color: #1976d2;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      .nav-tabs a {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome Manufacturer, {{ username }}</h1>
+  </header>
+
+  <nav class="nav-tabs">
+    <a href="/dashboard">🏠 Dashboard</a>
+    <a href="/passport">📄 Battery Passport</a>
+    <a href="/lifecycle">🔁 Lifecycle</a>
+    <a href="/logout">🚪 Logout</a>
+  </nav>
+
+  <div class="container">
+    <div class="card-grid">
+      <div class="card">
+        <a href="/passport">📄 Battery Passport Generator</a>
+        <p>Generate official passports for newly built batteries.</p>
+      </div>
+      <div class="card">
+        <a href="/lifecycle">🔁 Lifecycle Tracker</a>
+        <p>Log battery creation and forward it for usage or resale.</p>
+      </div>
+    </div>
+    <div class="logout">
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Smart Battery Management | <a href="#">About</a> | <a href="#">Contact Us</a></p>
+  </footer>
+</body>
+</html>
