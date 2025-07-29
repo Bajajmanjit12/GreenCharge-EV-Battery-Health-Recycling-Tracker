@@ -97,7 +97,7 @@ streamlit run app.py
 greencharge/
 ├── templates/                   # HTML templates for dashboards
 │   ├── login.html
-│   ├── register.html
+├── register.html
 │   ├── user_dashboard.html
 │   ├── admin_dashboard.html
 │   ├── manufacturer_dashboard.html
