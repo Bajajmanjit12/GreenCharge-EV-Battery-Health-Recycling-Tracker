@@ -1,82 +1,57 @@
-from flask import Flask, render_template, request, redirect, session, flash
-from flask_mysqldb import MySQL
-from flask_bcrypt import Bcrypt
-from flask_session import Session
-from config import DB_CONFIG
+from flask import Flask, render_template, send_file
+import qrcode
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+import os
+import datetime
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
-app.config['SESSION_TYPE'] = 'filesystem'
 
-# MySQL config
-app.config['MYSQL_HOST'] = DB_CONFIG['host']
-app.config['MYSQL_USER'] = DB_CONFIG['user']
-app.config['MYSQL_PASSWORD'] = DB_CONFIG['password']
-app.config['MYSQL_DB'] = DB_CONFIG['database']
+@app.route('/')
+def home():
+    return render_template('passport.html')  # First visit: shows button only
 
-Session(app)
-mysql = MySQL(app)
-bcrypt = Bcrypt(app)
+@app.route('/generate_passport')
+def generate_passport():
+    battery_info = {
+        "Battery ID": "EVB-987654",
+        "Manufacturer": "EcoVolt",
+        "Charge Cycles": 540,
+        "Voltage": "400V",
+        "State of Health": "85%",
+        "Last Updated": datetime.date.today().strftime("%Y-%m-%d")
+    }
 
-@app.route('/index.html')
-def index():
-    return render_template('index.html')
+    # 1. Generate PDF
+    pdf_filename = f"{battery_info['Battery ID']}_passport.pdf"
+    pdf_path = os.path.join("static", pdf_filename)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
-        role = request.form['role']
+    c = canvas.Canvas(pdf_path, pagesize=letter)
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, 750, "Battery Passport")
 
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(
-                "INSERT INTO users (username, email, password, role) VALUES (%s, %s, %s, %s)",
-                (username, email, password, role)
-            )
-            mysql.connection.commit()
-            cur.close()
-            flash('✅ Registration successful!')
-            return redirect('login.html')
-        except Exception as e:
-            print("❌ MySQL Insert Error:", e)
-            flash('❌ Registration failed. Check terminal for error.')
+    c.setFont("Helvetica", 12)
+    y = 710
+    for key, value in battery_info.items():
+        c.drawString(50, y, f"{key}: {value}")
+        y -= 30
 
-    return render_template('register.html')
+    # 2. Generate QR Code
+    qr_url = f"http://127.0.0.1:5000/download/{pdf_filename}"
+    qr_img = qrcode.make(qr_url)
+    qr_path = os.path.join("static", "qr_codes", f"{battery_info['Battery ID']}_qr.png")
+    os.makedirs(os.path.dirname(qr_path), exist_ok=True)
+    qr_img.save(qr_path)
 
-@app.route('login.html', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password_input = request.form['password']
-        role_input = request.form['role']
+    # 3. Embed QR in PDF
+    c.drawImage(qr_path, 400, 600, width=150, height=150)
+    c.save()
 
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cur.fetchone()
-        cur.close()
+    return render_template("passport.html", pdf=pdf_filename, qr=f"static/qr_codes/{battery_info['Battery ID']}_qr.png")
 
-        if user and bcrypt.check_password_hash(user[3], password_input) and user[4] == role_input:
-            session['user'] = user[1]
-            session['role'] = user[4]
-            flash('Login successful')
-            return redirect('user_dashboard.html')
-        else:
-            flash('Invalid login.')
-    return render_template('login.html')
-
-@app.route('user_dashboard.html')
-def user_dashboard():
-    if 'user' in session:
-        return render_template('user_dashboard.html', eco_points=0)
-    return redirect('login.html')
-
-@app.route('logout.html')
-def logout():
-    session.clear()
-    return redirect('login.html')
+@app.route('/download/<filename>')
+def download(filename):
+    return send_file(os.path.join("static", filename), as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
