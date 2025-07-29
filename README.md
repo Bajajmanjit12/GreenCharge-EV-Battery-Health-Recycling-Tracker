@@ -95,20 +95,35 @@ streamlit run app.py
 ##  Project structure
 
 greencharge/
+
 ├── templates/                   # HTML templates for dashboards
+
 │   ├── login.html
+
 ├── register.html
+
 │   ├── user_dashboard.html
+
 │   ├── admin_dashboard.html
+
 │   ├── manufacturer_dashboard.html
+
 │   └── recycler_dashboard.html
+
 ├── static/                      # CSS, QR codes, or assets
+
 ├── app.py                       # Main app logic (Flask or Streamlit)
+
 ├── database.py                  # Database connection logic
+
 ├── passport_generator.py        # PDF + QR generation
+
 ├── lifecycle.py                 # Lifecycle tracking logic
+
 ├── requirements.txt
+
 └── README.md
+
 
 ## ✨ Future Enhancements
 📲 Mobile-friendly UI
