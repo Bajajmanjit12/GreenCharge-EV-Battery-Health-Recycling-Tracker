@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="form-section">
+  <h2>Log Battery Lifecycle Event</h2>
+  <form method="POST" action="/add">
+    <input type="text" name="battery_id" placeholder="Battery ID" required>
+    <select name="action" required>
+      <option value="">--Select Action--</option>
+      <option value="Resale">Resale</option>
+      <option value="Reuse">Reuse</option>
+      <option value="Recycling">Recycling</option>
+    </select>
+    <input type="text" name="location" placeholder="Location" required>
+    <button type="submit">Add Log</button>
+  </form>
+</div>
+
+<div class="log-section">
+  <h2>📜 Lifecycle Timeline</h2>
+  <ul class="log-list">
+    {% for log in logs %}
+      <li>
+        <strong>{{ log[1] }}</strong> – {{ log[2] }} at {{ log[3] }}  
+        <span class="date">[{{ log[4] }}]</span>
+      </li>
+    {% else %}
+      <li>No lifecycle logs found.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}
