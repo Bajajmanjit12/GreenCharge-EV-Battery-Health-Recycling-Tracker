@@ -1,33 +1,85 @@
-{% extends "layout.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lifecycle Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #eef2f3;
+    }
 
-<div class="form-section">
-  <h2>Log Battery Lifecycle Event</h2>
-  <form method="POST" action="/add">
-    <input type="text" name="battery_id" placeholder="Battery ID" required>
-    <select name="action" required>
-      <option value="">--Select Action--</option>
-      <option value="Resale">Resale</option>
-      <option value="Reuse">Reuse</option>
-      <option value="Recycling">Recycling</option>
-    </select>
-    <input type="text" name="location" placeholder="Location" required>
-    <button type="submit">Add Log</button>
-  </form>
-</div>
+    .form-card, .timeline {
+      background: white;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
 
-<div class="log-section">
-  <h2>📜 Lifecycle Timeline</h2>
-  <ul class="log-list">
-    {% for log in logs %}
-      <li>
-        <strong>{{ log[1] }}</strong> – {{ log[2] }} at {{ log[3] }}  
-        <span class="date">[{{ log[4] }}]</span>
-      </li>
-    {% else %}
-      <li>No lifecycle logs found.</li>
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .event {
+      border-left: 5px solid #2c3e50;
+      padding-left: 10px;
+      margin-bottom: 15px;
+    }
+
+    .event-type {
+      font-weight: bold;
+      color: #2980b9;
+    }
+
+    .event-date {
+      font-size: 0.9em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-card">
+    <h2>♻️ Log Lifecycle Event</h2>
+    <form method="POST">
+      <input type="text" name="battery_id" placeholder="Battery ID" required>
+      <select name="event_type" required>
+        <option value="">Select Event Type</option>
+        <option value="resale">Resale</option>
+        <option value="reuse">Reuse</option>
+        <option value="recycle">Recycle</option>
+      </select>
+      <input type="date" name="event_date" required>
+      <textarea name="description" placeholder="Event Description (optional)"></textarea>
+      <button type="submit">Log Event</button>
+    </form>
+  </div>
+
+  <div class="timeline">
+    <h2>📜 Lifecycle Timeline</h2>
+    {% for e in events %}
+      <div class="event">
+        <div class="event-type">{{ e[2] | capitalize }} - {{ e[1] }}</div>
+        <div class="event-date">📅 {{ e[3] }}</div>
+        <p>{{ e[4] }}</p>
+      </div>
     {% endfor %}
-  </ul>
-</div>
+  </div>
 
-{% endblock %}
+</body>
+</html>
