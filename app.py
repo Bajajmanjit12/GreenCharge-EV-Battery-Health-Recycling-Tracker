@@ -1,50 +1,49 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect
 import sqlite3
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Database setup
 def init_db():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('battery_data.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS lifecycle
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  battery_id TEXT,
-                  action TEXT,
-                  location TEXT,
-                  date TEXT)''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS battery (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            battery_id TEXT,
+            charge_cycles INTEGER,
+            voltage REAL,
+            degradation REAL,
+            date_logged TEXT
+        )
+    ''')
     conn.commit()
     conn.close()
 
-init_db()
-
-# Home route
 @app.route('/')
 def home():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('battery_data.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM lifecycle ORDER BY date DESC")
-    logs = c.fetchall()
+    c.execute("SELECT * FROM battery ORDER BY date_logged DESC")
+    data = c.fetchall()
     conn.close()
-    return render_template('lifecycle.html', logs=logs)
+    return render_template('dashboard.html', data=data)
 
-# Add log
 @app.route('/add', methods=['POST'])
-def add_log():
+def add():
     battery_id = request.form['battery_id']
-    action = request.form['action']
-    location = request.form['location']
-    date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    charge_cycles = int(request.form['charge_cycles'])
+    voltage = float(request.form['voltage'])
+    degradation = float(request.form['degradation'])
 
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('battery_data.db')
     c = conn.cursor()
-    c.execute("INSERT INTO lifecycle (battery_id, action, location, date) VALUES (?, ?, ?, ?)",
-              (battery_id, action, location, date))
+    c.execute("INSERT INTO battery (battery_id, charge_cycles, voltage, degradation, date_logged) VALUES (?, ?, ?, ?, ?)",
+              (battery_id, charge_cycles, voltage, degradation, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     conn.commit()
     conn.close()
-
-    return redirect(url_for('home'))
+    return redirect('/')
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)

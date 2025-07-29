@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Battery Health Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <h1 class="text-center mb-4 text-success">🔋 Battery Health Dashboard</h1>
+
+    <!-- Add Battery Data -->
+    <form action="/add" method="POST" class="row g-3 bg-white p-4 rounded shadow-sm mb-4">
+      <div class="col-md-3">
+        <input type="text" class="form-control" name="battery_id" placeholder="Battery ID" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" class="form-control" name="charge_cycles" placeholder="Charge Cycles" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" step="0.1" class="form-control" name="voltage" placeholder="Voltage (V)" required>
+      </div>
+      <div class="col-md-2">
+        <input type="number" step="0.1" class="form-control" name="degradation" placeholder="Degradation (%)" required>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success w-100">Add Battery Log</button>
+      </div>
+    </form>
+
+    <!-- Battery Data Table -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white">
+        <strong>Battery History</strong>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-bordered mb-0 text-center">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Battery ID</th>
+              <th>Charge Cycles</th>
+              <th>Voltage (V)</th>
+              <th>Degradation (%)</th>
+              <th>Logged On</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+              <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
